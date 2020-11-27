@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 router.register("MyApp", views.operacionViews)
 
 urlpatterns = [
-    path('form/', views.cxcontact , name= "Subir imagen"),
+    path('', views.cxcontact , name= "Subir imagen"),
     path('api/', include(router.urls)),
 
 ]
