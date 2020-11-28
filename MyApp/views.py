@@ -22,7 +22,6 @@ from PIL import Image
 longitud, altura = 224, 224
 PATH = 'modelo_completo.pth'
 
-
 mean = np.array([0.5, 0.5, 0.5])
 std = np.array([0.25, 0.25, 0.25])
 
