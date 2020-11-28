@@ -14,6 +14,41 @@ import json
 import numpy as np
 from django.contrib import messages
 
+import numpy as np
+import torch
+from torchvision import transforms
+from PIL import Image
+
+longitud, altura = 224, 224
+PATH = 'modelo_completo.pth'
+
+
+mean = np.array([0.5, 0.5, 0.5])
+std = np.array([0.25, 0.25, 0.25])
+
+
+Test = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean, std)
+    ])
+
+
+
+model = torch.load(PATH)
+model.eval()
+
+def predict(file):
+
+  img = Test(Image.open(file))
+  batch_img_tensor = torch.unsqueeze(img, 0)  # 0 es el AXIS. 
+  out = model(batch_img_tensor)
+  
+  array = out.detach().numpy()
+  print(array[0][1])    #[0][0] es la probabilidad de que sea BENIGNO
+  return array[0][1]
+
 # Create your views here.
 
 
@@ -41,10 +76,11 @@ def cxcontact(request): #En vez de usar el decorador de arriba, que solo servía
             form.save()
             data = form.cleaned_data
             imagen = data["imagen"]
+            diagnosis = predict(imagen)
             
-            
-            messages.success(request, "Formulario enviado correctamente")
-            # respuesta = approvereject() Acá invocar a la funcion de ML.
+
+            messages.success(request, diagnosis)
+
             
 
     else:
