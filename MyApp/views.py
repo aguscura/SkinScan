@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
-from . models import imagen
-from . serializers import operacionSerializers
-from . forms import operacionform
+from . models import modelo_imagen
+from . serializers import imagenserializer
+from . forms import imagenform
 import pickle
 import json
 import numpy as np
@@ -20,7 +20,10 @@ from torchvision import transforms
 from PIL import Image
 
 longitud, altura = 224, 224
-PATH = 'modelo_completo.pth'
+
+PATH_1 = 'modelo_completo_1er.pth'
+PATH_2 = 'modelo_completo.pth'
+
 
 mean = np.array([0.5, 0.5, 0.5])
 std = np.array([0.25, 0.25, 0.25])
@@ -35,54 +38,55 @@ Test = transforms.Compose([
 
 
 
-model = torch.load(PATH)
-model.eval()
+model_1 = torch.load(PATH_1)
+model_1.eval()
+
+model_2 = torch.load(PATH_2)
+model_2.eval()
 
 def predict(file):
 
   img = Test(Image.open(file))
   batch_img_tensor = torch.unsqueeze(img, 0)  # 0 es el AXIS. 
-  out = model(batch_img_tensor)
-  
+  out = model_1(batch_img_tensor)
   array = out.detach().numpy()
-  print(array[0][1])    #[0][0] es la probabilidad de que sea BENIGNO
-  return array[0][1]
+  
+  resultado = array[0][1]
+  
+  if (resultado > 0.7):
+      
+      out = model_2(batch_img_tensor)
+      array = out.detach().numpy()
+      resultado = array[0][1]         #[0][0] es la probabilidad de que sea BENIGNO
+      diagnosis = str(resultado*100) + "%"
+      mensaje = "Formulario enviado con éxito, la probabilidad de riesgo existente es: " + diagnosis
+      return mensaje
+    
+  else: 
+      mensaje = "Esa imagen no parece ser un lunar, por favor intenta tomar una foto con las características mencionadas"
+      return mensaje
 
-# Create your views here.
 
 
-class operacionViews(viewsets.ModelViewSet):
-    queryset = imagen.objects.all() #Cada vez que pida una requests van a estar TODOS los objetos puestos en Operacion. 
-    serializer_class = operacionSerializers #Y usará el OperacionSerializer.
+class post_method(viewsets.ModelViewSet):
+    queryset = modelo_imagen.objects.all() #Cada vez que pida una requests van a estar TODOS los objetos puestos en Operacion. 
+    serializer_class = imagenserializer #Y usará el OperacionSerializer.
 
 
-# def approvereject(dic): #Funcion que le doy la request y me dice si está OK.
-
-#     try:
-
-#     except ValueError as error:
-
-#         return Response(error.args[0], status.HTTP_400_BAD_REQUEST) 
-
-        
-
-def cxcontact(request): #En vez de usar el decorador de arriba, que solo servía para POST, este me va a dejar cualquier request.
+def posteo(request): #En vez de usar el decorador de arriba, que solo servía para POST, este me va a dejar cualquier request.
     
     if request.method == "POST": #Si es un metodo post, arma un form con todos los datos.
-        form = operacionform(request.POST, request.FILES)
+        
+        form = imagenform(request.POST, request.FILES)
         if form.is_valid():
 
-            form.save()
             data = form.cleaned_data
             imagen = data["imagen"]
-            diagnosis = predict(imagen)
-            
+            mensaje_final = predict(imagen)
 
-            messages.success(request, diagnosis)
-
-            
+            messages.success(request, mensaje_final)
 
     else:
-        form = operacionform() #Si no es un metodo post, devuelve el coso vacio. 
+        form = imagenform() #Si no es un metodo post, devuelve el coso vacio. 
 
     return render(request, 'myform/cxform.html', {'form':form})

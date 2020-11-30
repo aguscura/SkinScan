@@ -84,17 +84,6 @@ DATABASES = {
     }
 }
 
-# import dj_database_url
-# from decouple import config
-
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=config('DATABASE_URL')
-#     )
-
-# }
-
-AUTH_USER_MODEL = "MyApp.Account"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -138,11 +127,6 @@ STATIC_TMP = os.path.join(BASE_DIR, 'static')
 
 os.makedirs(STATIC_TMP, exist_ok=True)
 os.makedirs(STATIC_ROOT, exist_ok=True)
-
-STATICFILES_DIRS = (
-os.path.join(BASE_DIR, 'static'),
-)
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

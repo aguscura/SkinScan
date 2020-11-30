@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from . models import imagen
+from . models import modelo_imagen
 
-class operacionSerializers(serializers.ModelSerializer):
+class imagenserializer(serializers.ModelSerializer):
     class MetaData:
 
-        model = imagen
+        model = modelo_imagen
         fields = "__all__" #Importa TODAS los campos de la clase Operacion.
 
     

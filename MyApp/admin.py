@@ -1,8 +1,8 @@
 from django.contrib import admin
-from . models import imagen
+from . models import modelo_imagen
 
 # Register your models here.
 
-admin.site.register(imagen)
+admin.site.register(modelo_imagen)
 
 

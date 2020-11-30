@@ -4,10 +4,10 @@ from . import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register("MyApp", views.operacionViews)
+router.register("MyApp", views.post_method)
 
 urlpatterns = [
-    path('', views.cxcontact , name= "Subir imagen"),
+    path('', views.posteo , name="Subir imagen"),
     path('api/', include(router.urls)),
 
 ]

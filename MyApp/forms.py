@@ -1,13 +1,12 @@
 from django import forms
-from . models import imagen
+from . models import modelo_imagen
 
-class operacionform(forms.ModelForm):
+class imagenform(forms.ModelForm):
 
     class Meta:
-
-        model = imagen
+        model = modelo_imagen
         fields = ['imagen',]
 
     def __init__(self, *args, **kwargs):
-        super(operacionform, self).__init__(*args, **kwargs)
-        self.fields['imagen'].required = False
+        super(imagenform, self).__init__(*args, **kwargs)
+        self.fields['imagen'].required = True
