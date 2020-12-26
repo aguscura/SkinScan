@@ -13,6 +13,7 @@ import pickle
 import json
 import numpy as np
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 
 import numpy as np
 import torch
@@ -44,6 +45,7 @@ model_1.eval()
 model_2 = torch.load(PATH_2)
 model_2.eval()
 
+@csrf_exempt
 def predict(file):
 
   img = Test(Image.open(file))
@@ -72,7 +74,7 @@ class post_method(viewsets.ModelViewSet):
     queryset = modelo_imagen.objects.all() #Cada vez que pida una requests van a estar TODOS los objetos puestos en Operacion. 
     serializer_class = imagenserializer #Y usará el OperacionSerializer.
 
-
+@csrf_exempt
 def posteo(request): #En vez de usar el decorador de arriba, que solo servía para POST, este me va a dejar cualquier request.
     
     if request.method == "POST": #Si es un metodo post, arma un form con todos los datos.
